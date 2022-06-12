@@ -30,7 +30,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-jkr^orxs*4=ks#
 DEBUG = bool( os.environ.get('DJANGO_DEBUG', True) )
 
 ALLOWED_HOSTS = ['tochka-auction-platform.herokuapp.com']
-CSRF_TRUSTED_ORIGINS = ['tochka-auction-platform.herokuapp.com']
+CSRF_TRUSTED_ORIGINS = ['https://tochka-auction-platform.herokuapp.com']
 
 # Application definition
 
