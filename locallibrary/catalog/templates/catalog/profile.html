@@ -1,0 +1,44 @@
+{% extends "base_generic.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="content-section">
+    <div class="media">
+        <h1><span style="">{{user.username}}</span><img style="max-width: 150px; max-height: 150px; float:right" src="{{user.profile.image.url}}"></h1>
+
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <fieldset class="form-group">
+            <legend class="border-bottom mb-4"></legend>
+            {{ updateUserForm | crispy }}
+            {{ updateProfileForm | crispy }}
+        </fieldset>
+        <div class="form-group">
+            <button type="submit">Сохранить</button>
+        </div>
+    </form>
+
+</div>
+
+{% if myWins %}
+<div class="content-section">
+    <h2 class="account-heading">Выигранные аукционы</h2>
+    <table class="table">
+        <tr>
+            <th>Название лота</th>
+            <th>Владелец</th>
+            <th>Цена</th>
+        </tr>
+        {% for auction in myWins %}
+        <tr>
+
+            <td><a class="article-title text-primary" href="{% url 'auction-detail' auction.id %}">{{auction.title}}</a>
+                      <td><a class="mr-2" href="{% url 'account-auctions' auction.owner.username %}">{{auction.owner.username}}</a></td>
+            <td>${{auction.price}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endif %}
+{% endblock content %}

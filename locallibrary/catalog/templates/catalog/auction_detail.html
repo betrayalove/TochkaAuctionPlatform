@@ -1,0 +1,186 @@
+{% extends "base_generic.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <article class="media content-section">
+        <script>
+                function makeTimer() {
+                    var endTime=new Date({{ object.date_expired|date:"U" }} * 1000);
+                    endTime = (Date.parse(endTime) / 1000);
+
+                        var now = new Date();
+                        now = (Date.parse(now) / 1000);
+
+                        var timeLeft = endTime - now;
+
+                        var days = Math.floor(timeLeft / 86400);
+                        var hours = Math.floor((timeLeft - (days * 86400)) / 3600);
+                        var minutes = Math.floor((timeLeft - (days * 86400) - (hours * 3600 )) / 60);
+                        var seconds = Math.floor((timeLeft - (days * 86400) - (hours * 3600) - (minutes * 60)));
+
+                        if (hours < "10") { hours = "0" + hours; }
+                        if (minutes < "10") { minutes = "0" + minutes; }
+                        if (seconds < "10") { seconds = "0" + seconds; }
+
+                        $("#days").html(days + "<span> Д, </span>");
+                        $("#hours").html(hours + "<span> Ч, </span>");
+                        $("#minutes").html(minutes + "<span> М, </span>");
+                        $("#seconds").html(seconds + "<span> С</span>");
+
+                }
+                setInterval(function() {
+
+
+                    var endTime=new Date({{ object.date_expired|date:"U" }} * 1000);
+                    endTime = (Date.parse(endTime) / 1000);
+
+                    var now = new Date();
+                    now = (Date.parse(now) / 1000);
+
+                    var closed = "{{ object.closed }}" ;
+                    if(now >= endTime && closed === "False"){
+                        location.reload();
+                    }else{
+                        makeTimer();
+                    }
+                },
+                1000);
+        </script>
+                        {% if object.owner == user %}
+                    <div style="float:right">
+                        <a class="btn btn-primary btn-sm mt-1 mb-1" href="{% url 'auction-update' object.id %}">Редактировать</a>
+                        <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'auction-delete' object.id %}">Удалить</a>
+                    </div>
+                {% endif %}
+
+        <img  style="border-radius: 50%;  " src="{{object.owner.profile.image.url}}" height="100" width="100" >
+
+        <div class="media-body">
+            <div class="article-metadata">
+                <a class="mr-2" href="{% url 'account-auctions' object.owner.username %}">{{ object.owner }}</a>
+                <small class="text-muted">Дата публикации: {{ object.date_created | date:"d F, Y"}}</small>
+
+            </div>
+
+            {% if object.closed %}
+                </br>
+                <h1 class="text-center text-danger">- - - - - АУКЦИОН ОКОНЧЕН - - - - -</h1>
+                {% if object.winnerBid %}
+
+                    {% if user != object.winnerBid.user %}
+                        <p>Победитель аукциона: <a href="{% url 'account-auctions' object.winnerBid.user.username %}">{{ object.winnerBid.user.username }}</a></p>
+                        <p>Товар был куплен за: <b>{{object.winnerBid.price}} $</b></p>
+                    {% else %}
+                        <p>Поздравляем, вы выиграли данный аукцион ценой в: <b>{{object.winnerBid.price}} $</b> </p>
+                        <p>Данный аукцион будет отображаться в вашем <a href="{% url 'profile' %}">профиле</a>.</p>
+                        <a href="{% url 'money' %}">Для оплаты нажмите на данное предложение.</a>
+                    {% endif %}
+                {% else %}
+                    <p>Товар не нашел своего победителя.</p>
+                {% endif %}
+                <hr>
+            {% endif %}
+            <h2 class="article-title">{{ object.title }}</h2>
+            <p class="article-content">Описание: {{ object.description }}</p>
+            <p style="color: #444444" class="article-description">{{object.condition}}</p>
+                <div class="row">
+                        <div class="col-sm">
+                                <img  class="hoverable img-thumbnail" style="padding-left: 1%;border-radius: 10%;" src="{{object.image.url}}">
+                        </div>
+                        <div class="col-sm-6 col-md-5 ">
+                            {% if object.closed %}
+                                <p style="font-size: 15px">Аукцион закончился: {{object.date_expired}}</p>
+                            {% else %}
+                                <p style="font-size: 13px">Аукцион закроется: {{object.date_expired}} </p>
+
+                                <div class="right-match-time">
+                                        <p id="countdown-1" style="font-size: 12px" >  До окончания:
+                                            <span id="days"></span><span id="hours"></span><span id="minutes"></span><span id="seconds"></span>
+                                        </p>
+                                </div>
+                            {% endif %}
+                    </div>
+                </div>
+            </br>
+            {% if bid_list %}
+                <p class="article-content"><b>Текущая цена: {{bid_list.last.price}}$</b> <a href="{% url 'auction-bid' object.id %}">{{bid_list|length}} bids</a></p>
+                {% if user.is_authenticated %}
+                    {% if user != object.owner %}
+                        {% if object.closed == False %}
+                        <div>
+                            <form method="POST">
+                                {% csrf_token %}
+                                {{ form | crispy}}
+                                <br>
+                                <input type="submit" value="Bid">
+                            </form>
+                        </div>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            {% else %}
+                {% load humanize %}
+                <p class="article-content"><b>{{object.price|intcomma}} $</b> 0 bids</p>
+                {% if user.is_authenticated %}
+                    {% if user != object.owner %}
+                        {% if object.closed == False %}
+                        <div>
+                            <form method="POST">
+                                {% csrf_token %}
+                                {{ form | crispy }}
+                                <br>
+                                <input type="submit" value="Bid">
+                            </form>
+                        </div>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+            <br>
+        </div>
+    </article>
+    <article class="media content-section">
+        <div>
+            <div class="table-responsive">
+                <table style="max-width: 100%;max-height: 100%; table-layout: auto; white-space:pre-wrap; word-wrap:break-word" class="table align-middle">
+                    <thead>
+                            <tr>
+                                <th>Пользователь</th>
+                                <th>Комментарий</th>
+                                <th>Время публикации</th>
+                            </tr>
+                    </thead>
+                    <tbody>
+                    {% for comment in comments %}
+                        {% if comment.user == object.owner %}
+                            <tr>
+                                <td class="first_td"><a class="mr-2" style="color: #c20000" href="{% url 'account-auctions' comment.user.username %}">{{ comment.user.username }}</a></td>
+                                <td class="second_td"> {{ comment.message }} </font></td>
+                                <td class="three_td"> {{ comment.date_created }} </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td class="first_td"><a class="mr-2" href="{% url 'account-auctions' comment.user.username %}">{{ comment.user.username }}</a></td>
+                                <td class="second_td"> {{ comment.message }} </td>
+                                <td class="three_td"> {{ comment.date_created }} </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% if user.is_authenticated %}
+            <form method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="comment">Комментарий:</label>
+                    <textarea class="form-control" rows="2" id="comment" name="comment"></textarea>
+                </div>
+                <button id="post_button" type="submit" class="btn btn-outline-primary">Опубликовать</button>
+            </form>
+            {% endif %}
+        </div>
+
+    </article>
+{% endblock content %}

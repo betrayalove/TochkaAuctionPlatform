@@ -1,0 +1,46 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+    <h1>Аукционы</h1>
+    {% if auction_list %}
+         {% for item in auction_list %}
+             {% if item.closed == 0 %}
+                 <article class="media content-section">
+                     <div class="container">
+                         <div class="row">
+                             <div class="col-xs-6 col-md-4"><a  href="{% url 'auction-detail' item.id %}"><img style="width: 300px; height: 300px; border-radius: 10%" id="img" class="hoverable img-thumbnail" src="{{item.image.url}}" ></a></div>
+                             <div class="col-xs-12 col-md-8">
+                                 <div class="media-body">
+                                     <h2><a class="article-title text-primary" href="{% url 'auction-detail' item.id %}">{{ item.title }}</a></h2>
+                                     <p class="text-muted text-left">{{ item.condition }}</p>
+                                     {% if item.description != '' %}
+                                     <p>Описание: {{ item.description|slice:":125" }}</p>
+                                     {% else %}
+                                     <p>Описание отсутствует :(</p>
+                                     {% endif %}
+                                     <h4 class="article-content"> <b>Текущая цена: {{item.price}} &dollar;</b></h4>
+                                     <h5 class="article-bid">{{ item.amount_of_bids }} bids</h5>
+                                     </br>
+                                     <h5>Закончится: {{item.date_expired}}</h5>
+                                     {% if item.winnerBid %}
+                                     <p>Победитель: <a class="mr-2" href="{% url 'account-auctions' item.winnerBid.user.username %}">{{ item.winnerBid.user.username }}</a></p>
+                                     {% else %}
+                                     <p>Нет победителя :(</p>
+                                     {% endif %}
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                 </article>
+             {% endif %}
+         {% endfor %}
+    {% else %}
+    <p>Еще никто не создал аукцион :(</p>
+    {% endif %}
+
+
+{% endblock %}
+
+
+
+

@@ -1,0 +1,27 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<h1 class="mb-3">Аукционы пользователя: {{ view.kwargs.username }} ({{ page_obj.paginator.count }})</h1>
+
+{% for item in items %}
+<article class="media content-section">
+
+    <br>
+            <img class="hoverable img-thumbnail" style="border-radius: 10%; max-width: 300px; max-height: 300px; float:left"  src="{{item.image.url}}" align="top">
+    <div class="block">
+            <h2><a class="article-title" href="{% url 'auction-detail' item.id %}">{{ item.title }}</a></h2>
+        {% if item.closed == 0 %}
+            <p style="color: green">Лот активен</p>
+        {% else %}
+            <p style="color: darkred">Лот неактивен</p>
+        {% endif %}
+        <p style="color: #464646; font-size: 15px">Создан: {{ item.date_created | date:"d F, Y"}}</p>
+    </div>
+
+</article>
+{% endfor %}
+
+{% include 'catalog/pagination_footer.html' %}
+
+{% endblock content %}
+

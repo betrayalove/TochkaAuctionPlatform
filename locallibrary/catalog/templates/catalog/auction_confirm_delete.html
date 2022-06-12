@@ -1,0 +1,16 @@
+{% extends "base_generic.html" %}
+{% block content %}
+    <div class="content-section">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Удалить аукцион</legend>
+                <h2>Вы точно хотите удалить аукцион? "{{object.title}}"?</h2>
+            </fieldset>   
+            <div class="form-group">
+                <button class="btn btn-outline-danger" type="submit">Да, удалить</button>
+                <a class="btn btn-outline-secondary" href="{% url 'auction-detail' object.id %}">Не хочу</a>
+            </div> 
+        </form>
+    </div>
+{% endblock content %}

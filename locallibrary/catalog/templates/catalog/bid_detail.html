@@ -1,0 +1,19 @@
+{% extends "base_generic.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+    <h1>История ставок</h1>
+    {% for bid in bid_list %}
+    <article class="media content-section">
+        <p>Ставка: {{ forloop.counter }}</p>
+        <img class="rounded-circle article-img" src="{{bid.user.profile.image.url}}">
+        <div class="media-body">
+            <div class="article-metadata">
+                <small class="text-muted">{{ bid.date_created}}</small>
+            </div>
+            <p class="article-content">Пользователь: {{bid.user.username}}</p>
+            <p class="article-content">Ставка: {{ bid.price }} $</p>
+        </div>
+    </article>
+    {% endfor %}
+{% endblock content %}

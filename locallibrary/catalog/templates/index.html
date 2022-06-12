@@ -1,0 +1,18 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<div class="main">
+    <h1 style="margin-top:2%">TOCHKA AUCTION PLATFORM</h1>
+
+    <p style="color:#464646">Welcome to <em>T.A.P.</em></p>
+
+    <h2>Цифорки</h2>
+    <ul>
+        <li><strong>Всего аукционов:</strong> <span  style="color:#656565">{{ num_auctions }}</span></li>
+        <li><strong>Всего ставок:</strong>  <span  style="color:#656565"> {{ num_bids }} </span></li>
+        <li><strong>Всего комментариев:</strong> <span  style="color:#656565">{{ num_comments }}</span></li>
+        <li><strong>Всего посещений данной страницы:</strong> <span  style="color:#656565">{{ num_visits }}</span></li>
+    </ul>
+</div>
+{% endblock %}
